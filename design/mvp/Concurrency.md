@@ -128,6 +128,18 @@ Thus, overall, `async` in WIT and the Component Model does not behave like a
 "color" in the sense described by the popular [What Color Is Your Function?]
 essay.
 
+The following table summarizes how the behavior of a callee changes, depending
+on whether it is `sync` or `async` lifted to a `sync` or `async` component
+function type:
+
+| Component function type | Lift canonical option | Valid? | Effect of callee blocking | Holds instances's exclusive lock | Can call while instance lock held? |
+| ----------------------- | --------------------- | ------ | ------------------ | -------------------- | --------------- |
+| `sync`   | `sync`   | ✅ | Switch to another ready thread in the component instance, trap if there is none | No, but only threads in the same instance and their recursive calls can run until callee returns | Yes |
+| `sync`   | `async`  | ❌ | N/A  | N/A | N/A |
+| `async`  | `sync`   | ✅ | Control returns to caller | While running or blocked | No, call waits until lock is released |
+| `async`  | `async` + callback  | ✅ | Control returns to caller | While running, not while blocked | No, waits until lock is released |
+| `async`  | `async` stackful | ✅ | Control returns to caller | No | Yes |
+
 Each time a component export is called, the wasm runtime logically spawns a new
 [green thread]  (as opposed to a [kernel thread]) to execute the export call
 concurrently with other calls in the runtime. This means that [thread-local
