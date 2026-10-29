@@ -132,7 +132,7 @@ The following table summarizes how the behavior of a callee changes, depending
 on whether it is `sync` or `async` lifted to a `sync` or `async` component
 function type:
 
-| Component function type | Lift canonical option | Valid? | Effect of callee blocking | Holds instances's exclusive lock | Can call while instance lock held? |
+| Component function type | Lift canonical option | Valid? | Effect of callee blocking | Holds instances's exclusive lock? | Can call while instance lock held? |
 | ----------------------- | --------------------- | ------ | ------------------ | -------------------- | --------------- |
 | `sync`   | `sync`   | ✅ | Switch to another ready thread in the component instance, trap if there is none | No, but only threads in the same instance and their recursive calls can run until callee returns | Yes |
 | `sync`   | `async`  | ❌ | N/A  | N/A | N/A |
